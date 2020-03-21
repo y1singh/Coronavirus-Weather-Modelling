@@ -16,7 +16,7 @@ def epoch_fit_params_corona_seir(init_vals, init_params, T, infected, lr=1e-2):
 	jacobian_mat = np.zeros((3,4))
 	# updated_alpha, updated_beta, updated_gamma1, updated_gamma2 = [alpha],[beta],[gamma1],[gamma2]
 	update_alpha, update_beta, update_gamma1, update_gamma2 = [0],[0],[0],[0]
-	for idx,t in enumerate(T[1:15]):
+	for idx,t in enumerate(T[1:10]):
 		update_mat = np.array([[(1-beta*E[-1]),(-beta*S[-1]),0],[(beta*E[-1]),(1+beta*S[-1]-alpha-gamma1),0],[0,alpha,(1-gamma2)]])
 		add_mat = np.array([[0,(-S[-1]*E[-1]),0,0],[(-E[-1]),S[-1]*E[-1],(-E[-1]),0],[E[-1],0,0,(-I[-1])]])
 		jacobian_mat = np.matmul(update_mat,jacobian_mat)+add_mat
@@ -32,7 +32,7 @@ def epoch_fit_params_corona_seir(init_vals, init_params, T, infected, lr=1e-2):
 		alpha_update = lr*(infected[idx+1]-I1)*jacobian_mat[2,0]
 		beta_update = lr*(infected[idx+1]-I1)*jacobian_mat[2,1]
 		gamma1_update = lr*(infected[idx+1]-I1)*jacobian_mat[2,2]
-		gamma2_update = lr*(infected[idx+1]-I1)*jacobian_mat[2,3]
+		gamma2_update = 0 #lr*(infected[idx+1]-I1)*jacobian_mat[2,3]
 		alpha_new = alpha+alpha_update
 		beta_new = beta+beta_update
 		gamma1_new = gamma1+gamma1_update
@@ -61,11 +61,11 @@ def test_fitting(model):
 	elif model.__name__=='base_seir_model':
 		sim_params = alpha, beta*rho, 0, gamma2
 	sim_results = corona_seir_model(init_vals,sim_params,T)
-
-	total_epochs = 400
+	noise = np.random.normal(0,0.1,size=(len(sim_results[2]),))
+	total_epochs = 800
 	lr = 0.04
 	lrd = 0.01
-	curr_params = 0,1,0,0.2
+	curr_params = 0,1,0,0.15
 	loss_arr = []
 	alpha_arr = []
 	beta_arr = []
@@ -73,7 +73,7 @@ def test_fitting(model):
 	gamma2_arr = []
 	for epoch in range(total_epochs):
 		curr_lr = lr/(1+epoch*lrd)
-		loss_jacobian = epoch_fit_params_corona_seir(init_vals,curr_params,T,sim_results[2],lr=curr_lr)
+		loss_jacobian = epoch_fit_params_corona_seir(init_vals,curr_params,T,sim_results[2]+noise,lr=curr_lr)
 		loss_epoch = np.sum(loss_jacobian[0])
 		new_alpha = max(0,curr_params[0]+np.sum(loss_jacobian[1]))
 		new_beta = max(0,curr_params[1]+np.sum(loss_jacobian[2]))
@@ -115,6 +115,10 @@ def test_fitting(model):
 	plt.ylabel('Fraction of population')
 	plt.xlabel('Time (days)')
 	plt.title('Simulated (GT) and learned models')
+	plt.figure()
+	plt.plot(sim_results[2],label='GT infected')
+	plt.plot(sim_results[2]+noise,label='noisy infected')
+	plt.legend()
 	plt.show()
 
 if __name__=='__main__':
