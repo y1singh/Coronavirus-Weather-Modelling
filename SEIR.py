@@ -8,8 +8,8 @@ def base_seir_model(init_vals,params,T):
 	alpha, beta, gamma = params
 	dt = T[1]-T[0]
 	for t in T[1:]:
-		S1 = S[-1] - (beta*S[-1]*E[-1]/N)*dt
-		E1 = E[-1] + (beta*S[-1]*E[-1]/N - alpha*E[-1])*dt
+		S1 = S[-1] - (beta*S[-1]*E[-1])*dt
+		E1 = E[-1] + (beta*S[-1]*E[-1] - alpha*E[-1])*dt
 		I1 = I[-1] + (alpha*E[-1] - gamma*I[-1])*dt
 		R1 = R[-1] + (gamma*I[-1])*dt
 		S.append(S1)
@@ -25,8 +25,8 @@ def corona_seir_model(init_vals,params,T):
 	alpha, beta, gamma1, gamma2 = params
 	dt = T[1]-T[0]
 	for t in T[1:]:
-		S1 = max(0,S[-1] - (beta*S[-1]*E[-1]/N)*dt)
-		E1 = E[-1] + (beta*S[-1]*E[-1]/N - alpha*E[-1] - gamma1*E[-1])*dt
+		S1 = max(0,S[-1] - (beta*S[-1]*E[-1])*dt)
+		E1 = E[-1] + (beta*S[-1]*E[-1] - alpha*E[-1] - gamma1*E[-1])*dt
 		I1 = I[-1] + (alpha*E[-1] - gamma2*I[-1])*dt
 		R1 = R[-1] + (gamma1*E[-1] + gamma2*I[-1])*dt
 		S.append(S1)
