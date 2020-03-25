@@ -25,10 +25,20 @@ def corona_seir_model(init_vals,params,T):
 	alpha, beta, gamma1, gamma2 = params
 	dt = T[1]-T[0]
 	for t in T[1:]:
-		S1 = max(0,S[-1] - (beta*S[-1]*E[-1])*dt)
+		min_val = 100
+		S1 = S[-1] - (beta*S[-1]*E[-1])*dt
+		if S1<min_val: min_val=S1
 		E1 = E[-1] + (beta*S[-1]*E[-1] - alpha*E[-1] - gamma1*E[-1])*dt
+		if E1<min_val: min_val=E1
 		I1 = I[-1] + (alpha*E[-1] - gamma2*I[-1])*dt
+		if I1<min_val: min_val=I1
 		R1 = R[-1] + (gamma1*E[-1] + gamma2*I[-1])*dt
+		if R1<min_val: min_val=R1
+		N1 = S1+E1+I1+R1-4*min_val
+		S1 = (S1-min_val)/N1
+		E1 = (E1-min_val)/N1
+		I1 = (I1-min_val)/N1
+		R1 = (R1-min_val)/N1
 		S.append(S1)
 		E.append(E1)
 		I.append(I1)
