@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from SEIR import corona_seir_model, base_seir_model
+from SEIR import corona_seir_model, base_seir_model, corona_seir_model_population
 
 # define param update equations
 # plot the partial derivative of each param with time
@@ -264,82 +264,3 @@ if __name__=='__main__':
 	gt_infected = np.array(data.iloc[16,35:]).astype(int)
 	plt.plot(gt_infected); plt.show()
 	fit_to_data(corona_seir_model,gt_infected,1e6,1e6)
-	# T_max = 60
-	# dt = 1
-	# T = np.linspace(0,T_max,int(T_max/dt)+1)
-	# N = 10000
-	# init_exposed = 10
-	# init_vals = (N-init_exposed)/N,init_exposed/N,0,0
-	# alpha = 0.2
-	# beta = 1.5
-	# gamma1 = 0.01
-	# gamma2 = 0.2
-	# rho = 1.0
-	# # if model.__name__=='corona_seir_model':
-	# # 	params = alpha, beta*rho, gamma1, gamma2
-	# # elif model.__name__=='base_seir_model':
-	# # 	params = alpha, beta*rho, gamma1
-	# sim_params = alpha, beta*rho, gamma1, gamma2
-	# sim_results = corona_seir_model(init_vals,sim_params,T)
-	# plt.figure(1)
-	# plt.plot(T,sim_results[0],label='Susceptible')
-	# plt.plot(T,sim_results[1],label='Exposed')
-	# plt.plot(T,sim_results[2],label='Infected')
-	# plt.plot(T,sim_results[3],label='Recovered')
-	# plt.legend()
-	# # plt.show()
-	# # init_params = 0.1*alpha, beta*rho, gamma1, gamma2
-	# init_params = 0, 1.5, 0.2, 0
-	# loss_jacobian = epoch_fit_params_corona_seir(init_vals,init_params,T,sim_results[2],lr=0.02)
-	# plt.figure(2)
-	# plt.plot(T,loss_jacobian[0])
-	# plt.figure(3)
-	# # plt.plot(T,loss_jacobian[1],label='gamma2_S')
-	# # plt.plot(T,loss_jacobian[2],label='gamma2_E')
-	# # plt.plot(T,loss_jacobian[3],label='gamma2_I')
-	# plt.plot(T,loss_jacobian[1],label='alpha')
-	# plt.plot(T,loss_jacobian[2],label='beta')
-	# plt.plot(T,loss_jacobian[3],label='gamma1')
-	# plt.plot(T,loss_jacobian[4],label='gamma2')
-	# plt.legend()
-	# plt.show()
-
-	# total_epochs = 400
-	# lr = 0.02
-	# lrd = 0.04
-	# # curr_params = 0.001,0.5,0.1,0.1
-	# curr_params = 0,1,0,0.1
-	# loss_arr = []
-	# alpha_arr = []
-	# beta_arr = []
-	# gamma1_arr = []
-	# gamma2_arr = []
-	# for epoch in range(total_epochs):
-	# 	curr_lr = lr/(1+epoch*lrd)
-	# 	loss_jacobian = epoch_fit_params_corona_seir(init_vals,curr_params,T,sim_results[2],lr=curr_lr)
-	# 	loss_epoch = np.sum(loss_jacobian[0])
-	# 	new_alpha = max(0,curr_params[0]+np.sum(loss_jacobian[1]))
-	# 	new_beta = max(0,curr_params[1]+np.sum(loss_jacobian[2]))
-	# 	new_gamma1 = max(0,curr_params[2]+np.sum(loss_jacobian[3]))
-	# 	new_gamma2 = max(0,curr_params[3]+np.sum(loss_jacobian[4]))
-	# 	curr_params = new_alpha,new_beta,new_gamma1,new_gamma2
-	# 	loss_arr.append(loss_epoch)
-	# 	alpha_arr.append(new_alpha)
-	# 	beta_arr.append(new_beta)
-	# 	gamma1_arr.append(new_gamma1)
-	# 	gamma2_arr.append(new_gamma2)
-	# plt.figure()
-	# plt.subplot(121)
-	# plt.plot(list(range(total_epochs)),loss_arr)
-	# plt.ylabel('Total MSE loss')
-	# plt.xlabel('Epochs')
-	# plt.subplot(122)
-	# plt.plot(list(range(total_epochs)),alpha_arr,label='alpha')
-	# plt.plot(list(range(total_epochs)),beta_arr,label='beta')
-	# plt.plot(list(range(total_epochs)),gamma1_arr,label='gamma1')
-	# plt.plot(list(range(total_epochs)),gamma2_arr,label='gamma2')
-	# plt.title('Original values: $\\alpha$={},$\\beta$={},$\gamma_1$={},$\gamma_2$={}'.format(sim_params[0],sim_params[1],sim_params[2],sim_params[3]))
-	# plt.ylabel('Parameter value')
-	# plt.xlabel('Epochs')
-	# plt.legend()
-	# plt.show()
