@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from tqdm import tqdm
 from SEIR import corona_seir_model_population
 
 def epoch_fit_params_corona_seir_population(init_vals, init_params, T, infected, lr=1e-2):
@@ -15,10 +16,10 @@ def epoch_fit_params_corona_seir_population(init_vals, init_params, T, infected,
 	# updated_alpha, updated_beta, updated_gamma1, updated_gamma2 = [alpha],[beta],[gamma1],[gamma2]
 	update_alpha, update_beta, update_gamma1, update_gamma2 = [0],[0],[0],[0]
 	# print(infected)
-	for idx,t in enumerate(T[1:50]):
+	for idx,t in enumerate(T[1:-3]):
 		# print("{} {} {} {} {:.3f} {:.3f} {:.3f} {:3.3f}".format(t,alpha,beta,gamma1,S[-1],E[-1],I[-1],np.max(jacobian_mat)))
 		update_mat = np.array([[(1-beta*E[-1]/N),(-beta*S[-1]/N),0],[(beta*E[-1]/N),(1+beta*S[-1]/N-alpha-gamma1),0],[0,alpha,(1-gamma2)]])
-		add_mat = np.array([[0,(-S[-1]*E[-1]/N),0,0],[(-E[-1]),S[-1]*E[-1]/N,(-E[-1]),0],[E[-1],0,0,(-I[-1])]])/max_infected
+		add_mat = np.array([[0,(-S[-1]*(E[-1]/N)),0,0],[(-E[-1]),S[-1]*(E[-1]/N),(-E[-1]),0],[E[-1],0,0,(-I[-1])]])/max_infected
 		jacobian_mat = np.matmul(update_mat,jacobian_mat)+add_mat
 		min_val = N
 		S1 = S[-1] - (beta*S[-1]*E[-1]/N)*dt
@@ -42,7 +43,7 @@ def epoch_fit_params_corona_seir_population(init_vals, init_params, T, infected,
 		loss.append(((infected[T[idx+1]]-I1)**2)**0.5)
 		alpha_update = lr*(infected[T[idx+1]]-I1)*jacobian_mat[2,0]
 		beta_update = lr*(infected[T[idx+1]]-I1)*jacobian_mat[2,1]
-		gamma1_update = lr*(infected[T[idx+1]]-I1)*jacobian_mat[2,2]
+		gamma1_update = 0 #lr*(infected[T[idx+1]]-I1)*jacobian_mat[2,2]
 		gamma2_update = 0 #lr*(infected[idx+1]-I1)*jacobian_mat[2,3]
 		alpha_new = alpha+alpha_update
 		beta_new = beta+beta_update
@@ -137,22 +138,22 @@ def fit_to_data_population(model,gt_infected,population):
 	dt = 1
 	T = np.linspace(0,T_max,int(T_max/dt)+1).astype(int)
 	N = population
-	init_exposed = int(gt_infected[0]*1)
+	init_exposed = int(gt_infected[0]*2)
 	init_vals = (N-init_exposed-gt_infected[0]),init_exposed,gt_infected[0],0
-	gamma2 = 0.01
+	gamma2 = 0.03
 	rho = 1.0
-	total_epochs = 4000
+	total_epochs = 20000
 	# lr = 0.04
 	# lrd = 0.01
-	lr = 0.0003/max_infected
-	lrd = 0.0
-	curr_params = 0.2,0.5,0,gamma2
+	lr = 0.0004/max_infected
+	lrd = 0.000
+	curr_params = 0.2,0.5,0.0,gamma2
 	loss_arr = []
 	alpha_arr = []
 	beta_arr = []
 	gamma1_arr = []
 	gamma2_arr = []
-	for epoch in range(total_epochs):
+	for epoch in tqdm(range(total_epochs)):
 		curr_lr = lr/(1+epoch*lrd)
 		loss_jacobian = epoch_fit_params_corona_seir_population(init_vals,curr_params,T,gt_infected,lr=curr_lr)
 		loss_epoch = np.sum(loss_jacobian[0])
@@ -166,12 +167,16 @@ def fit_to_data_population(model,gt_infected,population):
 		beta_arr.append(new_beta)
 		gamma1_arr.append(new_gamma1)
 		gamma2_arr.append(new_gamma2)
+	best_epoch = np.argmin(np.array(loss_arr))
+	print("Best learned params: {} {} {}".format(alpha_arr[best_epoch],beta_arr[best_epoch],gamma1_arr[best_epoch]))
 	plt.figure(1)
 	plt.subplot(221)
+	plt.axvline(x=best_epoch,color='k',linestyle='--')
 	plt.plot(list(range(total_epochs)),loss_arr)
 	plt.ylabel('Total MSE loss')
 	plt.xlabel('Epochs')
 	plt.subplot(222)
+	plt.axvline(x=best_epoch,color='k',linestyle='--')
 	plt.plot(list(range(total_epochs)),alpha_arr,label='alpha')
 	plt.plot(list(range(total_epochs)),beta_arr,label='beta')
 	plt.plot(list(range(total_epochs)),gamma1_arr,label='gamma1')
@@ -181,14 +186,15 @@ def fit_to_data_population(model,gt_infected,population):
 	plt.xlabel('Epochs')
 	plt.legend()
 	# print(init_vals)
-	T_pred = np.linspace(0,2*T_max,int(2*T_max/dt)+1).astype(int)
-	learned_results = model(init_vals,curr_params,T_pred)
+	best_params = alpha_arr[best_epoch],beta_arr[best_epoch],gamma1_arr[best_epoch],gamma2
+	T_pred = np.linspace(0,10+T_max,int((10+T_max)/dt)+1).astype(int)
+	learned_results = model(init_vals,best_params,T_pred)
 	# plt.figure(2)
 	plt.subplot(212)
 	# p = plt.plot(T,sim_results[0],label='GT Susceptible')
-	p = plt.plot(T_pred,learned_results[0]/N,linestyle='--',label='Predicted Susceptible')
+	# p = plt.plot(T_pred,learned_results[0]/N,linestyle='--',label='Predicted Susceptible')
 	# p = plt.plot(T,sim_results[1],label='GT Exposed')
-	p = plt.plot(T_pred,learned_results[1]/N,linestyle='--',label='Predicted Exposed')
+	# p = plt.plot(T_pred,learned_results[1]/N,linestyle='--',label='Predicted Exposed')
 	p = plt.plot(gt_infected[T]/N,label='GT Infected')
 	plt.plot(T_pred,learned_results[2]/N,color=p[0].get_color(),linestyle='--',label='Predicted Infected')
 	# p = plt.plot(T,sim_results[3],label='Recovered')
@@ -201,7 +207,11 @@ def fit_to_data_population(model,gt_infected,population):
 
 if __name__=='__main__':
 	# test_fitting_population(corona_seir_model_population)
+	region_idx = 62
+	region_population = 59000000
+	time_series_start = 9
+	time_series_end = 33
 	data = pd.read_csv('data\\time_series_covid_19_confirmed.csv')
-	gt_infected = np.array(data.iloc[16,35:]).astype(int)
+	gt_infected = np.array(data.iloc[region_idx,time_series_start:time_series_end]).astype(int)
 	plt.plot(gt_infected); plt.show()
-	fit_to_data_population(corona_seir_model_population,gt_infected,1e8)
+	fit_to_data_population(corona_seir_model_population,gt_infected,region_population)
