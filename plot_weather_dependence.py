@@ -27,9 +27,6 @@ def plot_dependence(func=linear_func):
 	multiplier = data.iloc[:,6]
 	temp = data.iloc[:,11]
 	humidity = data.iloc[:,12]
-	# print(temp[25])
-	# temp[25] = 50
-	# humidity[25] = 0.78
 	plt.figure()
 	plt.subplot(221)
 	# plt.scatter(temp,alpha)
@@ -60,9 +57,6 @@ def plot_dependence_corrected(func=linear_func):
 	beta_corrected = beta + alpha*(multiplier-1)
 	temp = data.iloc[:,11]
 	humidity = data.iloc[:,12]
-	# print(temp[25])
-	# temp[25] = 50
-	# humidity[25] = 0.78
 	plt.figure()
 	plt.subplot(221)
 	# plt.scatter(temp,alpha_corrected)
