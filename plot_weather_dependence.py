@@ -17,21 +17,19 @@ def quadratic_func(x,a,b,c):
 def plot_scatter_with_point_colors(xdata,ydata):
 	xdata_np = np.array(xdata)
 	ydata_np = np.array(ydata)
-	for idx in range(1,2):
+	for idx in range(5):
 		plt.scatter(xdata_np[region==idx],ydata_np[region==idx],c=colors[idx])
 
 def plot_dependence(func=linear_func):
 	data = pd.read_csv('data\\model_param_results.csv')
 	alpha = data.iloc[:,1]
 	beta = data.iloc[:,2]
-	alpha[21] = np.nan
-	beta[21] = np.nan
 	multiplier = data.iloc[:,6]
 	temp = data.iloc[:,11]
 	humidity = data.iloc[:,12]
-	print(temp[25])
-	temp[25] = 50
-	humidity[25] = 0.78
+	# print(temp[25])
+	# temp[25] = 50
+	# humidity[25] = 0.78
 	plt.figure()
 	plt.subplot(221)
 	# plt.scatter(temp,alpha)
@@ -57,16 +55,14 @@ def plot_dependence_corrected(func=linear_func):
 	data = pd.read_csv('data\\model_param_results.csv')
 	alpha = data.iloc[:,1]
 	beta = data.iloc[:,2]
-	alpha[21] = np.nan
-	beta[21] = np.nan
 	multiplier = data.iloc[:,6]
 	alpha_corrected = multiplier*alpha
 	beta_corrected = beta + alpha*(multiplier-1)
 	temp = data.iloc[:,11]
 	humidity = data.iloc[:,12]
-	print(temp[25])
-	temp[25] = 50
-	humidity[25] = 0.78
+	# print(temp[25])
+	# temp[25] = 50
+	# humidity[25] = 0.78
 	plt.figure()
 	plt.subplot(221)
 	# plt.scatter(temp,alpha_corrected)
