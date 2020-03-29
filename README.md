@@ -12,5 +12,9 @@ This repo contains the codebase for studying the effect of temperature and humid
 -- Todo --
 
 ## Model fitting
+* Add model image and differential equations
+* Write about gradient based model param fitting
+* Add image of a model fit and prediction
 
 ## Trends with weather
+* Add final image with trend lines
