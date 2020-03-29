@@ -53,4 +53,6 @@ Each dot represents a region, with the color representing the region's geographi
 3. We currently do not have enough datapoints to reliably comment on the infection spread at higher temperatures. These plots appear to indicate a trend of decreased disease spread, something that will get more and more clear as time progresses. 
 4. We have currently ignored the effect of age distribution in the population, i.e. we have assumed all age groups to be equally susceptible or all regions to have similar age distribution. These assumptions are not accurate, and have been undertaken ir order to simplify the model.
 5. We ignore the impact of different cultures on the spread of disease. For instance, some cultures could be more prone to infection spread because of increased social interaction and/or greeting techniques. We have ignored this currently in our analysis as well as other genetic factors that could make certain populations more susceptible.
-6. We trained our model based on the top 32 regions by total number of cases as of 22 March 2020.
+6. Currently, we trained our model for top 32 regions ordered by total number of cases as of 22 March 2020. However, the pipeline can be easily extended in the future for other regions/countries in order to get more data points and thereby get confirmatory results on the effect of weather on Covid-19 spread.
+
+__Thank you for showing interest in our project. We hope you stay safe and well during this crisis. Based on our results, all we can say about the current crisis is *"This too shall pass"*__
