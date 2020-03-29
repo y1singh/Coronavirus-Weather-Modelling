@@ -16,11 +16,16 @@ Each dot represents a region, with the color representing the region's geographi
 + [ ] Use the weather forecast to predict COVID-19 cases by simulating a SEIR model with appropriate parameters
 
 ## Data collection and processing
--- Todo --
+We used the following sources to collect data:
+* [2019 Novel Coronavirus COVID-19 (2019-nCoV) Data Repository by Johns Hopkins CSSE](https://github.com/CSSEGISandData/COVID-19) to get the time series data for people infected by Coronavirus.
+* [DarkSky API](https://darksky.net/dev) to fetch the weather data.
+* [Worldometer](https://www.worldometers.info/) to get the population of different regions.
+
+The data we worked on was a time series data repository maintained by John Hopkins CSSE (see [Confirmed Time Series Data](data/time_series_covid_19_confirmed.csv)). We looked for the weather data of the highly infected regions and stored the same in a [json file](data/weather.json) which was also mapped in [model_param_results.csv](data/model_param_results.csv). The population data of different provinces and countries was taken from [Worldometer](https://www.worldometers.info/) and stored in a [csv file](data/population_data.csv). The code for all the data collection was done in [a jupyter notebook](src/data%20collection/Code.ipynb).
 
 ## Model fitting
 ![](outputs/SEIR.jpg)
-We used a relatively simple, yet effective, compartment-based model called the SEIR model. Briefly, the entire population is divided into 4 compartments with the dynamics defined by the above equations: 
+<br>We used a relatively simple, yet effective, compartment-based model called the SEIR model. Briefly, the entire population is divided into 4 compartments with the dynamics defined by the above equations: 
 * **S** - representing the susceptible population, i.e. those who could get affected. We assume everyone can get affected.
 * **E** - representing the exposed population, i.e. those who are carrying the virus but are not yet showing symptoms or haven't been tested and isolated
 * **I** - representing the infected population, i.e. those who have been identified as COVID-positive patients and have been isolated and/or being treated. The number of cases for this compartment is reported.
@@ -48,3 +53,4 @@ Each dot represents a region, with the color representing the region's geographi
 3. We currently do not have enough datapoints to reliably comment on the infection spread at higher temperatures. These plots appear to indicate a trend of decreased disease spread, something that will get more and more clear as time progresses. 
 4. We have currently ignored the effect of age distribution in the population, i.e. we have assumed all age groups to be equally susceptible or all regions to have similar age distribution. These assumptions are not accurate, and have been undertaken ir order to simplify the model.
 5. We ignore the impact of different cultures on the spread of disease. For instance, some cultures could be more prone to infection spread because of increased social interaction and/or greeting techniques. We have ignored this currently in our analysis as well as other genetic factors that could make certain populations more susceptible.
+6. We trained our model based on the top 32 regions by total number of cases as of 22 March 2020.
