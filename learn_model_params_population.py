@@ -142,11 +142,11 @@ def fit_to_data_population(model,gt_infected,population):
 	init_vals = (N-init_exposed-gt_infected[0]),init_exposed,gt_infected[0],0
 	gamma2 = 0.03
 	rho = 1.0
-	total_epochs = 20000
+	total_epochs = 40000
 	# lr = 0.04
 	# lrd = 0.01
-	lr = 0.0004/max_infected
-	lrd = 0.000
+	lr = 0.0002/max_infected
+	lrd = 0.001
 	curr_params = 0.2,0.5,0.0,gamma2
 	loss_arr = []
 	alpha_arr = []
@@ -168,7 +168,6 @@ def fit_to_data_population(model,gt_infected,population):
 		gamma1_arr.append(new_gamma1)
 		gamma2_arr.append(new_gamma2)
 	best_epoch = np.argmin(np.array(loss_arr))
-	print("Best learned params: {} {} {}".format(alpha_arr[best_epoch],beta_arr[best_epoch],gamma1_arr[best_epoch]))
 	plt.figure(1)
 	plt.subplot(221)
 	plt.axvline(x=best_epoch,color='k',linestyle='--')
@@ -203,14 +202,16 @@ def fit_to_data_population(model,gt_infected,population):
 	plt.ylabel('Fraction of population')
 	plt.xlabel('Time (days)')
 	plt.title('GT and learned models')
+	print("Best learned params: {} {} {} {}".format(alpha_arr[best_epoch],beta_arr[best_epoch],gamma1_arr[best_epoch],100*np.abs(learned_results[2,T_max]-gt_infected[-1])/gt_infected[-1]))
+	print(learned_results[2,T_max],gt_infected[-1])
 	plt.show()
 
 if __name__=='__main__':
 	# test_fitting_population(corona_seir_model_population)
-	region_idx = 62
-	region_population = 59000000
-	time_series_start = 9
-	time_series_end = 33
+	region_idx = 502
+	region_population = 10045029
+	time_series_start = 58
+	time_series_end = 69
 	data = pd.read_csv('data\\time_series_covid_19_confirmed.csv')
 	gt_infected = np.array(data.iloc[region_idx,time_series_start:time_series_end]).astype(int)
 	plt.plot(gt_infected); plt.show()
